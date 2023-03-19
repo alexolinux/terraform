@@ -1,6 +1,6 @@
 locals {
   project             = "study"
-  resource_group_name = "1-39f90925-playground-sandbox"
+  resource_group_name = "rg-azure"
 }
 
 # Existing Resource Group
