@@ -23,7 +23,7 @@ resource "azurerm_storage_account" "this" {
   tags = merge(
     var.global_tags,
     {
-      name = "${var.environment}_storage_account_${local.project}"
+      name = "${var.environment}${var.storage_account_name}"
     },
   )
 }
@@ -49,7 +49,7 @@ resource "azurerm_storage_account_network_rules" "this" {
 # Resource: Network Security Group (NSG)
 # https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/network_security_group
 resource "azurerm_network_security_group" "this" {
-  name                = "${var.environment}_${var.security_group_name}_${local.project}"
+  name                = "${var.environment}-${var.security_group_name}-${local.project}"
   resource_group_name = data.azurerm_resource_group.selected.name
   location            = data.azurerm_resource_group.selected.location
 }
@@ -74,14 +74,14 @@ resource "azurerm_network_security_rule" "this" {
 # Resource: Virtual Network
 # https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/virtual_network
 resource "azurerm_virtual_network" "this" {
-  name                = "${var.environment}_${var.virtual_network_name}_${local.project}"
+  name                = "${var.environment}-${var.virtual_network_name}-${local.project}"
   location            = data.azurerm_resource_group.selected.location
   resource_group_name = data.azurerm_resource_group.selected.name
   address_space       = var.address_space
   dns_servers         = ["10.0.0.4", "10.0.0.5"]
 
   subnet {
-    name           = "default_subnet"
+    name           = "default-subnet"
     address_prefix = "10.0.1.0/24"
     security_group = azurerm_network_security_group.this.id
   }
@@ -89,14 +89,14 @@ resource "azurerm_virtual_network" "this" {
   tags = merge(
     var.global_tags,
     {
-      name = "${var.environment}_${var.virtual_network_name}_${local.project}"
+      name = "${var.environment}-${var.virtual_network_name}-${local.project}"
     },
   )
 }
 
 # Additional Resources: Subnet, NSG (NSG association) for VM access by DevOps Sysadmin.
 resource "azurerm_network_security_group" "nsg_vm" {
-  name                = "nsg_vm"
+  name                = "nsg-vm"
   location            = data.azurerm_resource_group.selected.location
   resource_group_name = data.azurerm_resource_group.selected.name
 
@@ -133,7 +133,7 @@ resource "azurerm_subnet_network_security_group_association" "nsg_vm_asc" {
 
 # https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/network_interface
 resource "azurerm_network_interface" "vm_win" {
-  name                          = "${var.environment}_${var.network_interface_name}_${local.project}_win"
+  name                          = "${var.environment}-${var.network_interface_name}-${local.project}-win"
   location                      = data.azurerm_resource_group.selected.location
   resource_group_name           = data.azurerm_resource_group.selected.name
   enable_accelerated_networking = var.enable_accelerated_networking
@@ -146,19 +146,19 @@ resource "azurerm_network_interface" "vm_win" {
   tags = merge(
     var.global_tags,
     {
-      name = "${var.environment}_${var.network_interface_name}_${local.project}_win"
+      name = "${var.environment}-${var.network_interface_name}-${local.project}-win"
     },
   )
 }
 
 resource "azurerm_network_interface" "vm_linux" {
-  name                          = "${var.environment}_${var.network_interface_name}_${local.project}_linux"
+  name                          = "${var.environment}-${var.network_interface_name}-${local.project}-linux"
   location                      = data.azurerm_resource_group.selected.location
   resource_group_name           = data.azurerm_resource_group.selected.name
   enable_accelerated_networking = var.enable_accelerated_networking
 
   ip_configuration {
-    name                          = "${var.network_interface_name}_vm_linux"
+    name                          = "${var.network_interface_name}-linux"
     subnet_id                     = azurerm_subnet.vm_subnet.id
     private_ip_address_allocation = "Dynamic"
   }
@@ -170,7 +170,7 @@ resource "azurerm_network_interface" "vm_linux" {
 
 # VM_WIN
 resource "azurerm_windows_virtual_machine" "vm_win" {
-  name                = "${var.environment}_${var.vm_name_windows}"
+  name                = "${var.environment}-${var.vm_name_windows}"
   location            = data.azurerm_resource_group.selected.location
   resource_group_name = data.azurerm_resource_group.selected.name
   size                = var.vm_size
@@ -195,14 +195,14 @@ resource "azurerm_windows_virtual_machine" "vm_win" {
   tags = merge(
     var.global_tags,
     {
-      name = "${var.environment}_${var.vm_name_windows}_${local.project}"
+      name = "${var.environment}-${var.vm_name_windows}-${local.project}"
     },
   )
 }
 
 # VM_LINUX
 resource "azurerm_linux_virtual_machine" "vm_linux" {
-  name                = "${var.environment}_${var.vm_name_linux}"
+  name                = "${var.environment}-${var.vm_name_linux}"
   location            = data.azurerm_resource_group.selected.location
   resource_group_name = data.azurerm_resource_group.selected.name
   size                = var.vm_size
@@ -222,8 +222,8 @@ resource "azurerm_linux_virtual_machine" "vm_linux" {
   }
 
   source_image_reference {
-    publisher = "CentOS"
-    offer     = "OpenLogic"
+    publisher = "OpenLogic"
+    offer     = "CentOS"
     sku       = "7.5"
     version   = "latest"
   }
@@ -231,7 +231,7 @@ resource "azurerm_linux_virtual_machine" "vm_linux" {
   tags = merge(
     var.global_tags,
     {
-      name = "${var.environment}_${var.vm_name_linux}_${local.project}"
+      name = "${var.environment}-${var.vm_name_linux}"
     },
   )
 }
