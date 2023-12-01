@@ -9,7 +9,7 @@ Besides, this lab will provision the EC2 instances behind of the Auto Scaling Gr
 ### ALB Prerequisites
 
 - 1 VPC
-  - 2 subnets in different AZs
+  - 2 public subnets in different AZs
   - Route table attached to IGW
   - 2 Security groups:
     - SG for ALB
