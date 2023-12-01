@@ -2,7 +2,7 @@
 ---
 ### ALB
 
-The purpose of this lab is deploying a Public Application Load Balancer across the provided public subnet.
+The purpose of this lab is deploying a Public Application Load Balancer across the provided public subnets.
 
 Besides, this lab will provision the EC2 instances behind of the Auto Scaling Group, using launch templates within Target Group configuration.
 
