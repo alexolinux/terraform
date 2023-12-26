@@ -78,9 +78,6 @@ resource "aws_security_group" "allows_ssh" {
     }
   )
 
-  lifecycle {
-    create_before_destroy = true
-  }
 }
 
 #-- security-group ALB
@@ -122,9 +119,6 @@ resource "aws_security_group" "allows_alb" {
     }
   )
 
-  lifecycle {
-    create_before_destroy = true
-  }
 }
 
 # EC2 Required Resources
@@ -176,6 +170,7 @@ resource "aws_launch_template" "this" {
 
   network_interfaces {
     associate_public_ip_address = true
+    security_groups             = [aws_security_group.allows_ssh.id]
   }
 
   tag_specifications {
@@ -192,8 +187,8 @@ resource "aws_launch_template" "this" {
     )
   }
 
-  vpc_security_group_ids = [aws_security_group.allows_alb.id]
-  user_data              = filebase64("./files/bootstrap.sh")
+  #vpc_security_group_ids = [aws_security_group.allows_alb.id]
+  user_data = filebase64("./files/bootstrap.sh")
   # user_data = <<-EOF
   #   #!/bin/bash
   #   yum update -y
@@ -205,16 +200,24 @@ resource "aws_launch_template" "this" {
 
 # Auto Scaling Group
 #https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/autoscaling_group
-# resource "aws_autoscaling_group" "this" {
-#   desired_capacity    = 2
-#   max_size            = 4
-#   min_size            = 1
-#   vpc_zone_identifier = #aws_subnet.example_subnets[*].id
-#   launch_template {
-#     id      = aws_launch_template.this.id
-#     version = "$Latest"
-#   }
-# }
+resource "aws_autoscaling_group" "this" {
+  desired_capacity = 2
+  max_size         = 4
+  min_size         = 2
+  # Original vpc_zone_identifier : aws_subnet.example_subnets[*].id
+  vpc_zone_identifier = module.vpc.public_subnets
+  launch_template {
+    id      = aws_launch_template.this.id
+    version = "$Latest"
+  }
+
+  health_check_type         = "EC2"
+  health_check_grace_period = 300
+  force_delete              = true
+  wait_for_capacity_timeout = "0"
+  protect_from_scale_in     = false
+
+}
 
 # Application Load Balancer
 #https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb
@@ -249,7 +252,7 @@ resource "aws_lb_target_group" "this" {
   name        = "${local.name}-alb-tg"
   port        = 80
   protocol    = "HTTP"
-  target_type = "instance"        #"alb"
+  target_type = "instance"
   vpc_id      = module.vpc.vpc_id #aws_vpc.main.id
 
   health_check {
@@ -273,11 +276,12 @@ resource "aws_lb_target_group" "this" {
   )
 }
 
-# Attach the Auto Scaling Group to the ALB Target Group
-# resource "aws_lb_target_group_attachment" "this" {
-#   target_group_arn = aws_lb_target_group.this.arn
-#   target_id        = aws_autoscaling_group.this.id
-# }
+# ALB Target Group Attachment
+#https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb_target_group_attachment
+resource "aws_lb_target_group_attachment" "this" {
+  target_group_arn = aws_lb_target_group.this.arn
+  target_id        = aws_autoscaling_group.this.id
+}
 
 # Listener to ALB
 #https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb_listener
@@ -291,4 +295,3 @@ resource "aws_lb_target_group" "this" {
 #     target_group_arn = aws_lb_target_group.this.arn
 #   }
 # }
-
