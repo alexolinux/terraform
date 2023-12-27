@@ -16,7 +16,44 @@ locals {
   }
 }
 
+#-- Fetch data: Availability Zones
 data "aws_availability_zones" "available" {}
+
+#-- Fetch data: Amazon Linux AMI
+data "aws_ami" "amazon_linux" {
+  most_recent = true
+
+  owners = ["amazon"]
+
+  filter {
+    name = "name"
+
+    values = [
+      "amzn-ami-hvm-*-x86_64-gp2",
+    ]
+  }
+
+  filter {
+    name = "owner-alias"
+
+    values = [
+      "amazon",
+    ]
+  }
+}
+
+# SSH KeyPair
+#https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/key_pair
+resource "aws_key_pair" "this" {
+  key_name   = var.key_name
+  public_key = var.public_key
+
+  tags = merge(
+    var.default_tags,
+    local.tags,
+    {}
+  )
+}
 
 # Required VPC Provision
 #https://registry.terraform.io/modules/terraform-aws-modules/vpc/aws/latest
@@ -49,6 +86,7 @@ module "vpc" {
 
 # Security Groups Provision
 #https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group.html
+<<<<<<< HEAD
 #-- security-group SSH
 resource "aws_security_group" "allows_ssh" {
   name        = "allows_ssh"
@@ -79,10 +117,12 @@ resource "aws_security_group" "allows_ssh" {
   )
 
 }
+=======
+>>>>>>> 16e55fd (Adjust/Improvements of ALB features)
 
 #-- security-group ALB
-resource "aws_security_group" "allows_alb" {
-  name        = "allows_alb"
+resource "aws_security_group" "alb" {
+  name        = "alb"
   description = "Load Balancer security group"
   vpc_id      = module.vpc.vpc_id
 
@@ -119,42 +159,58 @@ resource "aws_security_group" "allows_alb" {
     }
   )
 
-}
-
-# EC2 Required Resources
-#-- Fetch Amazon Linux AMI
-data "aws_ami" "amazon_linux" {
-  most_recent = true
-
-  owners = ["amazon"]
-
-  filter {
-    name = "name"
-
-    values = [
-      "amzn-ami-hvm-*-x86_64-gp2",
-    ]
+<<<<<<< HEAD
+=======
+  lifecycle {
+    create_before_destroy = true
   }
 
-  filter {
-    name = "owner-alias"
-
-    values = [
-      "amazon",
-    ]
-  }
+>>>>>>> 16e55fd (Adjust/Improvements of ALB features)
 }
 
-# SSH KeyPair
-resource "aws_key_pair" "this" {
-  key_name   = var.key_name
-  public_key = var.public_key
+#-- security-group SSH
+resource "aws_security_group" "ec2" {
+  name        = "ec2"
+  description = "EC2 Security Group"
+  vpc_id      = module.vpc.vpc_id
+
+  ingress {
+    description = "SSH Access for devops sysadmins"
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = var.cidr_blocks_ssh
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 
   tags = merge(
     var.default_tags,
     local.tags,
-    {}
+    {
+      Name = "allows_ec2",
+    }
   )
+
+  lifecycle {
+    create_before_destroy = true
+  }
+
+}
+
+resource "aws_security_group_rule" "ec2_alb" {
+  description              = "Allows traffic from SG ALB to EC2 Instances"
+  type                     = "ingress"
+  from_port                = 80
+  to_port                  = 80
+  protocol                 = "tcp"
+  source_security_group_id = aws_security_group.alb.id
+  security_group_id        = aws_security_group.ec2.id
 }
 
 # Launch Template provision
@@ -170,8 +226,14 @@ resource "aws_launch_template" "this" {
 
   network_interfaces {
     associate_public_ip_address = true
+<<<<<<< HEAD
     security_groups             = [aws_security_group.allows_ssh.id]
+=======
+    security_groups             = [aws_security_group.ec2.id]
+>>>>>>> 16e55fd (Adjust/Improvements of ALB features)
   }
+
+  user_data = filebase64("./files/bootstrap.sh")
 
   tag_specifications {
     # Specifies the resource type as "instance"
@@ -187,6 +249,7 @@ resource "aws_launch_template" "this" {
     )
   }
 
+<<<<<<< HEAD
   #vpc_security_group_ids = [aws_security_group.allows_alb.id]
   user_data = filebase64("./files/bootstrap.sh")
   # user_data = <<-EOF
@@ -196,6 +259,30 @@ resource "aws_launch_template" "this" {
   #   echo "<html><body><h2>EC2 Hostname: \$(hostname)</h2></body></html>" > /usr/share/nginx/html/index.html
   #   systemctl enable --now nginx
   # EOF
+=======
+  lifecycle {
+    create_before_destroy = true
+  }
+
+}
+
+# Target Group
+#https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb_target_group
+resource "aws_alb_target_group" "this" {
+  name     = "${local.name}-alb-tg"
+  port     = 80
+  protocol = "HTTP"
+  vpc_id   = module.vpc.vpc_id
+
+  # Target Group Tags
+  tags = merge(
+    var.default_tags,
+    local.tags,
+    {
+      Name = "${local.name}-alb-tg",
+    }
+  )
+>>>>>>> 16e55fd (Adjust/Improvements of ALB features)
 }
 
 # Auto Scaling Group
@@ -204,18 +291,30 @@ resource "aws_autoscaling_group" "this" {
   desired_capacity = 2
   max_size         = 4
   min_size         = 2
+<<<<<<< HEAD
   # Original vpc_zone_identifier : aws_subnet.example_subnets[*].id
+=======
+
+>>>>>>> 16e55fd (Adjust/Improvements of ALB features)
   vpc_zone_identifier = module.vpc.public_subnets
   launch_template {
     id      = aws_launch_template.this.id
     version = "$Latest"
   }
+<<<<<<< HEAD
 
   health_check_type         = "EC2"
   health_check_grace_period = 300
   force_delete              = true
   wait_for_capacity_timeout = "0"
   protect_from_scale_in     = false
+=======
+  target_group_arns = [aws_alb_target_group.this.arn]
+
+  health_check_type         = "ELB"
+  health_check_grace_period = 300
+  force_delete              = true
+>>>>>>> 16e55fd (Adjust/Improvements of ALB features)
 
 }
 
@@ -225,10 +324,12 @@ resource "aws_lb" "this" {
   name               = "${local.name}-alb"
   internal           = false
   load_balancer_type = "application"
-  security_groups    = [aws_security_group.allows_alb.id]
-  subnets            = module.vpc.public_subnets #[for subnet in aws_subnet.public : subnet.id]
+  security_groups    = [aws_security_group.alb.id]
+  subnets            = module.vpc.public_subnets
 
   enable_deletion_protection = false
+  enable_http2               = true
+  drop_invalid_header_fields = true
 
   # access_logs {
   #   bucket  = aws_s3_bucket.lb_logs.id
@@ -246,6 +347,7 @@ resource "aws_lb" "this" {
   )
 }
 
+<<<<<<< HEAD
 # ALB Target Group
 #https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb_target_group
 resource "aws_lb_target_group" "this" {
@@ -295,3 +397,17 @@ resource "aws_lb_target_group_attachment" "this" {
 #     target_group_arn = aws_lb_target_group.this.arn
 #   }
 # }
+=======
+# Create ALB Listener
+#https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb_listener
+resource "aws_lb_listener" "http" {
+  load_balancer_arn = aws_lb.this.arn
+  port              = 80
+  protocol          = "HTTP"
+
+  default_action {
+    target_group_arn = aws_alb_target_group.this.id
+    type             = "forward"
+  }
+}
+>>>>>>> 16e55fd (Adjust/Improvements of ALB features)
