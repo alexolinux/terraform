@@ -86,39 +86,6 @@ module "vpc" {
 
 # Security Groups Provision
 #https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group.html
-<<<<<<< HEAD
-#-- security-group SSH
-resource "aws_security_group" "allows_ssh" {
-  name        = "allows_ssh"
-  description = "Allows SSH inbound traffic"
-  vpc_id      = module.vpc.vpc_id
-
-  ingress {
-    description = "SSH Access for devops sysadmins"
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = var.cidr_blocks_ssh
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  tags = merge(
-    var.default_tags,
-    local.tags,
-    {
-      Name = "allows_ssh",
-    }
-  )
-
-}
-=======
->>>>>>> 16e55fd (Adjust/Improvements of ALB features)
 
 #-- security-group ALB
 resource "aws_security_group" "alb" {
@@ -159,13 +126,10 @@ resource "aws_security_group" "alb" {
     }
   )
 
-<<<<<<< HEAD
-=======
   lifecycle {
     create_before_destroy = true
   }
 
->>>>>>> 16e55fd (Adjust/Improvements of ALB features)
 }
 
 #-- security-group SSH
@@ -226,11 +190,7 @@ resource "aws_launch_template" "this" {
 
   network_interfaces {
     associate_public_ip_address = true
-<<<<<<< HEAD
-    security_groups             = [aws_security_group.allows_ssh.id]
-=======
     security_groups             = [aws_security_group.ec2.id]
->>>>>>> 16e55fd (Adjust/Improvements of ALB features)
   }
 
   user_data = filebase64("./files/bootstrap.sh")
@@ -249,17 +209,6 @@ resource "aws_launch_template" "this" {
     )
   }
 
-<<<<<<< HEAD
-  #vpc_security_group_ids = [aws_security_group.allows_alb.id]
-  user_data = filebase64("./files/bootstrap.sh")
-  # user_data = <<-EOF
-  #   #!/bin/bash
-  #   yum update -y
-  #   yum install -y nginx
-  #   echo "<html><body><h2>EC2 Hostname: \$(hostname)</h2></body></html>" > /usr/share/nginx/html/index.html
-  #   systemctl enable --now nginx
-  # EOF
-=======
   lifecycle {
     create_before_destroy = true
   }
@@ -282,7 +231,6 @@ resource "aws_alb_target_group" "this" {
       Name = "${local.name}-alb-tg",
     }
   )
->>>>>>> 16e55fd (Adjust/Improvements of ALB features)
 }
 
 # Auto Scaling Group
@@ -291,30 +239,16 @@ resource "aws_autoscaling_group" "this" {
   desired_capacity = 2
   max_size         = 4
   min_size         = 2
-<<<<<<< HEAD
-  # Original vpc_zone_identifier : aws_subnet.example_subnets[*].id
-=======
-
->>>>>>> 16e55fd (Adjust/Improvements of ALB features)
   vpc_zone_identifier = module.vpc.public_subnets
   launch_template {
     id      = aws_launch_template.this.id
     version = "$Latest"
   }
-<<<<<<< HEAD
-
-  health_check_type         = "EC2"
-  health_check_grace_period = 300
-  force_delete              = true
-  wait_for_capacity_timeout = "0"
-  protect_from_scale_in     = false
-=======
   target_group_arns = [aws_alb_target_group.this.arn]
 
   health_check_type         = "ELB"
   health_check_grace_period = 300
   force_delete              = true
->>>>>>> 16e55fd (Adjust/Improvements of ALB features)
 
 }
 
@@ -331,6 +265,7 @@ resource "aws_lb" "this" {
   enable_http2               = true
   drop_invalid_header_fields = true
 
+  #https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-access-logs.html
   # access_logs {
   #   bucket  = aws_s3_bucket.lb_logs.id
   #   prefix  = "test-lb"
@@ -347,57 +282,6 @@ resource "aws_lb" "this" {
   )
 }
 
-<<<<<<< HEAD
-# ALB Target Group
-#https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb_target_group
-resource "aws_lb_target_group" "this" {
-  name        = "${local.name}-alb-tg"
-  port        = 80
-  protocol    = "HTTP"
-  target_type = "instance"
-  vpc_id      = module.vpc.vpc_id #aws_vpc.main.id
-
-  health_check {
-    path                = "/index.html"
-    protocol            = "HTTP"
-    port                = "80"
-    interval            = 30
-    timeout             = 5
-    healthy_threshold   = 2
-    unhealthy_threshold = 2
-    matcher             = "200-399"
-  }
-
-  # Target Group Tags
-  tags = merge(
-    var.default_tags,
-    local.tags,
-    {
-      Name = "${local.name}-alb-tg",
-    }
-  )
-}
-
-# ALB Target Group Attachment
-#https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb_target_group_attachment
-resource "aws_lb_target_group_attachment" "this" {
-  target_group_arn = aws_lb_target_group.this.arn
-  target_id        = aws_autoscaling_group.this.id
-}
-
-# Listener to ALB
-#https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb_listener
-# resource "aws_lb_listener" "this" {
-#   load_balancer_arn = aws_lb.this.arn
-#   port              = 80
-#   protocol          = "HTTP"
-
-#   default_action {
-#     type             = "forward"
-#     target_group_arn = aws_lb_target_group.this.arn
-#   }
-# }
-=======
 # Create ALB Listener
 #https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb_listener
 resource "aws_lb_listener" "http" {
@@ -410,4 +294,3 @@ resource "aws_lb_listener" "http" {
     type             = "forward"
   }
 }
->>>>>>> 16e55fd (Adjust/Improvements of ALB features)
