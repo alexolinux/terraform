@@ -236,9 +236,9 @@ resource "aws_alb_target_group" "this" {
 # Auto Scaling Group
 #https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/autoscaling_group
 resource "aws_autoscaling_group" "this" {
-  desired_capacity = 2
-  max_size         = 4
-  min_size         = 2
+  desired_capacity    = 2
+  max_size            = 4
+  min_size            = 2
   vpc_zone_identifier = module.vpc.public_subnets
   launch_template {
     id      = aws_launch_template.this.id
