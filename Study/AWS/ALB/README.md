@@ -22,3 +22,7 @@ Besides, this lab will provision the EC2 instances behind of the Auto Scaling Gr
 
 ![ALB](./img/alb_architecture.png)
 
+---
+
+### **Note:** *This lab does not involve SSL configuration (for http study only).*
+
