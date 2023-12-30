@@ -74,6 +74,12 @@ variable "cidr_blocks_ssh" {
   default     = ["0.0.0.0/0"]
 }
 
+variable "cidr_blocks_alb" {
+  description = "A list of ALB access"
+  type        = list(string)
+  default     = ["0.0.0.0/0"]
+}
+
 variable "default_tags" {
   description = "Additional tags for the public subnets"
   type        = map(string)
