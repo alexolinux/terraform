@@ -254,6 +254,7 @@ resource "aws_autoscaling_group" "this" {
     id      = aws_launch_template.this.id
     version = "$Latest"
   }
+
   target_group_arns = [aws_alb_target_group.this.arn]
 
   health_check_type         = "ELB"
@@ -272,7 +273,6 @@ resource "aws_lb" "this" {
   subnets            = module.vpc.public_subnets
 
   enable_deletion_protection = false
-  enable_http2               = true
   drop_invalid_header_fields = true
 
   #https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-access-logs.html
@@ -300,8 +300,8 @@ resource "aws_lb_listener" "http" {
   protocol          = "HTTP"
 
   default_action {
-    target_group_arn = aws_alb_target_group.this.id
     type             = "forward"
+    target_group_arn = aws_alb_target_group.this.id    
   }
 }
 
