@@ -246,21 +246,21 @@ resource "aws_alb_target_group" "this" {
 # Auto Scaling Group
 #https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/autoscaling_group
 resource "aws_autoscaling_group" "this" {
-  desired_capacity    = 2
-  max_size            = 4
-  min_size            = 2
-  vpc_zone_identifier = module.vpc.public_subnets
-  launch_template {
-    id      = aws_launch_template.this.id
-    version = "$Latest"
-  }
-
-  target_group_arns = [aws_alb_target_group.this.arn]
+  desired_capacity = 2
+  max_size         = 4
+  min_size         = 2
 
   health_check_type         = "ELB"
   health_check_grace_period = 300
   force_delete              = true
 
+  vpc_zone_identifier = module.vpc.public_subnets
+  target_group_arns   = [aws_alb_target_group.this.arn]
+
+  launch_template {
+    id      = aws_launch_template.this.id
+    version = "$Latest"
+  }
 }
 
 # Application Load Balancer
@@ -304,19 +304,3 @@ resource "aws_lb_listener" "http" {
     target_group_arn = aws_alb_target_group.this.id
   }
 }
-
-# Redirect SSL example
-# resource "aws_lb_listener" "http" {
-#   load_balancer_arn = aws_lb.this.arn
-#   port              = "80"
-#   protocol          = "HTTP"
-
-#   default_action {
-#     type = "redirect"
-#     redirect {
-#       port        = "443"
-#       protocol    = "HTTPS"
-#       status_code = "HTTP_301"
-#     }
-#   }
-# }
