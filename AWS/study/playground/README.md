@@ -75,7 +75,6 @@ It is being used for studying.
 
 #### Ok, but... How to delete at ALL?
 
-
 - No worries. Run the following command:
 
   ```shell
