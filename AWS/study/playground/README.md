@@ -61,12 +61,12 @@ It is being used for studying.
 
 - Go to the project resources folder and execute the following commands:
 
-```shell
-  terraform init
-  terraform validate
-  terraform plan
-  terraform apply
-```
+  ```shell
+    terraform init
+    terraform validate
+    terraform plan
+    terraform apply
+  ```
 
   - init: Start Terraform Provider
   - validate: terraform validation code
@@ -78,11 +78,11 @@ It is being used for studying.
 
 - No worries. Run the following command:
 
-```shell
-  terraform destroy -auto-approve
-```
+  ```shell
+    terraform destroy -auto-approve
+  ```
 
-> For more details: Access this **[link](https://developer.hashicorp.com/terraform/cli/run)**
+  > For more details: Access this **[link](https://developer.hashicorp.com/terraform/cli/run)**
 
 ---
 
