@@ -8,13 +8,13 @@ playground is a continuous lab. The idea is growing gradually according to the c
 
 It is being used for studying.
 
-### Current project
+## Current project
 
 - vpc
 
-#### Terraform - UP and Running
+### Terraform - UP and Running
 
-##### AWS Profile
+#### AWS Profile
 
 - [Configure your AWS Profile](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html)
 
@@ -57,7 +57,7 @@ It is being used for studying.
   }
   ```
   
-##### Using Terraform
+#### Using Terraform
 
 - Go to the project resources folder and execute the following commands:
 
@@ -73,7 +73,7 @@ It is being used for studying.
   - plan: simulate a provision
   - apply: provision target resources
 
-##### Ok, but... How to delete at ALL?
+#### Ok, but... How to delete at ALL?
 
 
 - No worries. Run the following command:
