@@ -69,9 +69,9 @@ It is being used for studying.
   ```
 
   - init: Start Terraform Provider
-  - validate: terraform validation code
-  - plan: simulate a provision
-  - apply: provision target resources
+  - validate: Terraform validation code
+  - plan: Simulate a provision
+  - apply: Provision target resources
 
 #### Ok, but... How to delete at ALL?
 
