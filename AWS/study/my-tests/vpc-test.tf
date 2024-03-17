@@ -1,7 +1,7 @@
 # terraform provision
 
 locals {
-  project = "vpc-testing"
+  project = "testing"
   name    = "vpc-test"
 
   availability_zones = ["us-east-1e", "us-east-1f"]
