@@ -62,8 +62,8 @@ variable "public_key" {
 
 variable "instance_type" {
   description = "ec2 instance type"
-  type = string
-  default = "t2.micro"
+  type        = string
+  default     = "t2.micro"
 }
 
 #-- Tag Vars
