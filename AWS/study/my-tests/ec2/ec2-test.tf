@@ -1,8 +1,8 @@
 
 #-- locals
 locals {
-  #project = "testing"
-  #name    = "ec2-test"
+  project = "testing"
+  name    = "ec2-test"
 
   vpc_name        = "vpc-test"
   azs             = slice(data.aws_availability_zones.available.names, 0, 2)
