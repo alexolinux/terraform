@@ -4,7 +4,7 @@ locals {
   project = "testing"
   name    = "vpc-test"
 
-  availability_zones = ["us-east-1e", "us-east-1f"]
+  availability_zones = ["us-east-1b", "us-east-1c"]
 
   public_subnet_cidrs = [
     for i in range(var.public_subnet_count) : "10.0.${i * 16}.0/24"
