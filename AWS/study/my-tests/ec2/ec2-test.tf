@@ -1,10 +1,9 @@
 
 #-- locals
 locals {
-  project = "testing"
-  name    = "ec2-test"
-
-  vpc_name        = "vpc-test"
+  project  = "testing"
+  vpc_name = "vpc-test"
+  name     = "ec2-test"
   azs             = slice(data.aws_availability_zones.available.names, 0, 2)
   cidr_blocks_ssh = ["0.0.0.0/0"]
 
@@ -27,7 +26,7 @@ data "aws_vpc" "selected" {
 data "aws_subnet" "public" {
   filter {
     name   = "tag:Name"
-    values = ["public-subnet-1"]
+    values = ["public-subnet-1", "public-subnet-2"]
   }
 }
 
