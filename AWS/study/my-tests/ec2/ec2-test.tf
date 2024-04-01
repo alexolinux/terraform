@@ -11,8 +11,8 @@ locals {
   tags = {
     Project     = local.project
     Environment = "dev"
-    provision   = "terraform"
-    managedby   = "devops"
+    managed     = "terraform"
+    createdby   = "devops"
   }
 }
 
@@ -54,7 +54,7 @@ data "aws_ami" "amazon_linux_2" {
   }
 }
 
-# IAM AWS Managed Policy & Role
+# IAM AWS Managed Policy & AWS User IAM Role for ec2 instance
 data "aws_iam_policy" "selected" {
   name = "AmazonSSMManagedInstanceCore"
 }
@@ -78,6 +78,7 @@ resource "aws_iam_role_policy_attachment" "iam_attachment" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
 }
 
+# Required for ec2 resource
 resource "aws_iam_instance_profile" "instance_profile" {
   name = "EC2InstanceProfileSSMCore"
   role = aws_iam_role.iam_instance_core.name
@@ -127,6 +128,17 @@ resource "aws_security_group" "ec2" {
 
 }
 
+# Additional SG Rule for Jenkins Access
+resource "aws_security_group_rule" "http" {
+  type              = "ingress"
+  description       = "Access for Jenkins on 8080"
+  from_port         = 8080
+  to_port           = 8080
+  protocol          = "tcp"
+  cidr_blocks       = ["0.0.0.0/0"]
+  security_group_id = aws_security_group.ec2.id
+}
+
 resource "aws_key_pair" "this" {
   key_name   = "keypair-${local.name}"
   public_key = var.public_key
@@ -134,15 +146,24 @@ resource "aws_key_pair" "this" {
 
 # ec2 instance resource
 resource "aws_instance" "this" {
-  ami           = data.aws_ami.amazon_linux_2.id
-  instance_type = var.instance_type
-  key_name      = aws_key_pair.this.id
-  #user_data = "${file("bootstrap.sh")}"
+  ami                  = data.aws_ami.amazon_linux_2.id
+  instance_type        = var.instance_type
+  key_name             = aws_key_pair.this.id
   iam_instance_profile = aws_iam_instance_profile.instance_profile.name
 
   subnet_id              = data.aws_subnet.public.id
   vpc_security_group_ids = [aws_security_group.ec2.id]
 
+  # Provisioner connection
+  connection {
+    type        = "ssh"
+    user        = var.user_name
+    private_key = file("${var.private_key}")
+    host        = self.public_ip
+  }
+
+  # User Data Automation script
+  user_data = file("./files/bootstrap.sh")
 
   tags = merge(
     local.tags,

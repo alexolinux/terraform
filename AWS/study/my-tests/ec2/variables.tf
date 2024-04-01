@@ -11,6 +11,25 @@ variable "instance_type" {
   default     = "t2.micro"
 }
 
+#Extra Vars: group_name/user_name/private_key
+#might be defined using .tfvars or by using overrride.tf
+#overrride.tf is included in .gitignore for sensitive data
+variable "group_name" {
+  description = "Linux Group"
+  type        = string
+}
+
+variable "user_name" {
+  description = "Linux User"
+  type        = string
+}
+
+variable "private_key" {
+  description = "Path to the private SSH key file"
+  type        = string
+  sensitive   = true
+}
+
 #-- Tag Vars
 variable "tags" {
   type = map(string)
@@ -20,4 +39,3 @@ variable "tags" {
     createdby   = "devops"
   }
 }
-
