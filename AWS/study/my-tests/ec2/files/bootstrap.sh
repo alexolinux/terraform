@@ -1,20 +1,20 @@
 #!/bin/bash
 
 # Required Variables (Change these values according to your needs)
-USERNAME="sysadmin"
+USERNAME="alexmbarbosa"
 GROUPNAME="devops"
-PUBLIC_KEY=""
+PUBLIC_KEY="ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIK1CjAysvZdq5Ch/as4s8R/wvXvWMwpP1V5VPMSkO5KH"
 
 # Shell Script Functions -------------------------------------------------------------------
 command_exists() {
-  command -v "$1" >/dev/null 2>&1
+	command -v "$1" >/dev/null 2>&1
 }
 
 # Shell Script Code
 # Create GROUPNAME/USERNAME
-sudo GROUPNAMEadd "${GROUPNAME}"
+sudo groupadd "${GROUPNAME}"
 echo "%${GROUPNAME} ALL=(ALL) NOPASSWD:ALL" | sudo tee /etc/sudoers.d/"${GROUPNAME}"
-sudo USERNAMEadd -m -G "${GROUPNAME}" "${USERNAME}"
+sudo useradd -m -G "${GROUPNAME}" "${USERNAME}"
 
 # Configure sysadmin ssh public key in authorized keys
 sudo mkdir -p /home/"${USERNAME}"/.ssh
@@ -28,13 +28,13 @@ sudo chmod 600 /home/"${USERNAME}"/.ssh/authorized_keys
 packages=("wget" "fontconfig" "git" "yum-utils" "nmap-ncat")
 
 for package in "${packages[@]}"; do
-  if ! command_exists "${package}"; then
-    sudo yum install -y "${package}"
-  fi
+	if ! command_exists "${package}"; then
+		sudo yum install -y "${package}"
+	fi
 done
 
 if ! command_exists java || [[ "$(java -version 2>&1 | grep 'java version')" == "" ]]; then
-  sudo yum install -y java-21 java-21-devel
+	sudo yum install -y java-21 java-21-devel
 fi
 
 # install terraform
@@ -48,8 +48,8 @@ sudo mkdir -p /home/"${USERNAME}"/bin && sudo cp ./kubectl /home/"${USERNAME}"/b
 
 # install jenkins
 if [[ ! -f "/etc/yum.repos.d/jenkins.repo" ]]; then
-  sudo wget -O /etc/yum.repos.d/jenkins.repo https://pkg.jenkins.io/redhat-stable/jenkins.repo
-  sudo rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io-2023.key
+	sudo wget -O /etc/yum.repos.d/jenkins.repo https://pkg.jenkins.io/redhat-stable/jenkins.repo
+	sudo rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io-2023.key
 fi
 
 # Update packages
@@ -57,7 +57,7 @@ sudo yum upgrade -y
 
 # Jenkins install
 if ! command_exists jenkins; then
-  sudo yum install -y jenkins
+	sudo yum install -y jenkins
 fi
 
 # Jenkins Daemon
