@@ -31,3 +31,6 @@ override.tf.json
 # Ignoring My source envs
 *.env
 **/.env
+
+# VSCode
+**.trunk**
