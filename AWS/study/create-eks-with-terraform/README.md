@@ -3,7 +3,7 @@
 
 ---
 
-This folder contains some study following the following tutorial:
+This folder contains some studies following the tutorial:
 
 Terraform EKS Cluster Creation by **Anton Putra**
 
