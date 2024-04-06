@@ -41,3 +41,11 @@ resource "aws_subnet" "public_us_east_1" {
     }
   )
 }
+
+output "private_subnets" {
+  value = aws_subnet.private_us_east_1[*].cidr_block
+}
+
+output "public_subnets" {
+  value = aws_subnet.public_us_east_1[*].cidr_block
+}
