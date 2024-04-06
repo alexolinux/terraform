@@ -23,7 +23,7 @@ resource "aws_subnet" "private_us_east_1" {
 
 }
 
-resource "aws_subnet" "public_us_east_1a" {
+resource "aws_subnet" "public_us_east_1" {
   count = length(local.public_subnet_cidrs)
 
   vpc_id                  = aws_vpc.main.id
