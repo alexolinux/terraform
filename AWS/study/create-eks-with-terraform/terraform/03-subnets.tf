@@ -14,10 +14,10 @@ resource "aws_subnet" "private_us_east_1" {
   tags = merge(
     var.tags_all,
     {
-      "Name"                            = "private-${element(local.azs, count.index)}"
-      "Tier"                            = "private"
-      "kubernetes.io/role/internal-elb" = "1"
-      "kubernetes.io/cluster/eks-ckad"  = "owned"
+      "Name"                                                = "private-${element(local.azs, count.index)}"
+      "Tier"                                                = "private"
+      "kubernetes.io/role/internal-elb"                     = "1"
+      "kubernetes.io/cluster/eks-ckad"                      = "owned"
       "service.beta.kubernetes.io/aws-load-balancer-scheme" = "internal"
     }
   )
