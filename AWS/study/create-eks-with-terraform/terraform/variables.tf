@@ -1,0 +1,42 @@
+variable "tags_all" {
+  description = "A map of tags to apply to all resources"
+  type        = map(string)
+  default = {
+    Name        = "CloudGuru"
+    Environment = "Development"
+    managedby   = "terraform"
+    Tutorial    = "Anton Putra - EKS Cluster"
+  }
+}
+
+# eks variables
+variable "kube_version" {
+  default     = "1.29"
+  type        = string
+  description = "The Kubernetes Version"
+}
+
+#https://docs.aws.amazon.com/eks/latest/APIReference/API_Nodegroup.html#AmazonEKS-Type-Nodegroup-amiType
+variable "ami_type" {
+  default     = "AL2_x86_64"
+  type        = string
+  description = "AMI type in the node group configuration"
+}
+
+variable "capacity_type" {
+  default     = "ON_DEMAND"
+  type        = string
+  description = "Valid Values: ON_DEMAND | SPOT"
+}
+
+variable "instance_types" {
+  default     = ["t3.small", "t3.micro", "t3.medium"]
+  type        = list(string)
+  description = "List of instance types associated with the EKS Node Group"
+}
+
+variable "disk_size" {
+  default     = 18
+  type        = number
+  description = "Disk size in the node group configuration"
+}
