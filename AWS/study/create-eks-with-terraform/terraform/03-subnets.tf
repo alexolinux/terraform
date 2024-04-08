@@ -18,6 +18,7 @@ resource "aws_subnet" "private_us_east_1" {
       "Tier"                            = "private"
       "kubernetes.io/role/internal-elb" = "1"
       "kubernetes.io/cluster/eks-ckad"  = "owned"
+      "service.beta.kubernetes.io/aws-load-balancer-scheme" = "internal"
     }
   )
 
