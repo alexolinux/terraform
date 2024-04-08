@@ -25,8 +25,8 @@ spec:
         resources: {}
 
 ---
-apiVersion: apps/v1
-kind: service
+apiVersion: v1
+kind: Service
 metadata:
   name:  internal-nginx-service
   annotations:
