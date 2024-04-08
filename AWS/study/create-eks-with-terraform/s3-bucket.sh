@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Replace these variables with your own values
-BUCKET_NAME="ax-aws-create-eks-with-terraform-2024"
-REGION="us-east-1"
+BUCKET_NAME="<backend-s3-bucket-for-terraform>"
+REGION="<aws-region-here>"
 
 # Check if AWS_PROFILE environment variable is set
 if [ -z "${AWS_PROFILE}" ]; then
