@@ -17,7 +17,7 @@ resource "aws_subnet" "private_us_east_1" {
       "Name"                            = "private-${element(local.azs, count.index)}"
       "Tier"                            = "private"
       "kubernetes.io/role/internal-elb" = "1"
-      "kubernetes.io/cluster/demo"      = "owned"
+      "kubernetes.io/cluster/eks-ckad"  = "owned"
     }
   )
 
@@ -34,10 +34,10 @@ resource "aws_subnet" "public_us_east_1" {
   tags = merge(
     var.tags_all,
     {
-      "Name"                       = "public-${element(local.azs, count.index)}"
-      "Tier"                       = "public"
-      "kubernetes.io/role/elb"     = "1"
-      "kubernetes.io/cluster/demo" = "owned"
+      "Name"                           = "public-${element(local.azs, count.index)}"
+      "Tier"                           = "public"
+      "kubernetes.io/role/elb"         = "1"
+      "kubernetes.io/cluster/eks-ckad" = "owned"
     }
   )
 }
