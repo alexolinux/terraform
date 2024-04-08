@@ -32,3 +32,5 @@ kubectl config get-contexts
 - <https://docs.aws.amazon.com/eks/latest/userguide/create-kubeconfig.html>
 
 - <https://docs.aws.amazon.com/eks/latest/userguide/connecting-cluster.html>
+
+> **TO DO:** Fix the internal load balancer TAG/Provision (it is not being created).
