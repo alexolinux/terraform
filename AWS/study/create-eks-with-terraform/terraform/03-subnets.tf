@@ -21,7 +21,6 @@ resource "aws_subnet" "private_us_east_1" {
       "service.beta.kubernetes.io/aws-load-balancer-scheme" = "internal"
     }
   )
-
 }
 
 resource "aws_subnet" "public_us_east_1" {
