@@ -11,6 +11,33 @@ Terraform EKS Cluster Creation by **Anton Putra**
 
 - **GitHub lesson:** [Tutorial Terraform EKS Cluster](https://github.com/antonputra/tutorials/tree/main/lessons/138/terraform)
 
+# My Structure
+
+- s3-bucket.sh: Shell Script to create/destroy backend s3 bucket
+- terraform: Terraform source-code directory
+- k82: Kubernetes manifest for testing.
+
+```shell
+.
+├── k8s
+│   └── demo-app.yaml
+├── README.md
+├── s3-bucket.sh
+└── terraform
+    ├── 00-backend.tf
+    ├── 00-provider.tf
+    ├── 01-vpc.tf
+    ├── 02-int-gateway.tf
+    ├── 03-subnets.tf
+    ├── 04-nat-gateway.tf
+    ├── 05-route-tables.tf
+    ├── 07-eks-cluster.tf
+    ├── 08-eks-nodes.tf
+    └── variables.tf
+
+3 directories, 13 files
+```
+
 ---
 
 ## EKS connection
