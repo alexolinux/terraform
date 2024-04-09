@@ -14,6 +14,9 @@ Terraform EKS Cluster Creation by **Anton Putra**
 # My Structure
 
 - s3-bucket.sh: Shell Script to create/destroy backend s3 bucket
+  - Script requirement
+    - **`BUCKET_NAME`**="`add-backend-s3-bucket-for-terraform-here`"
+    - **`REGION`**="`add-aws-region-here`"
 - terraform: Terraform source-code directory
 - k82: Kubernetes manifest for testing.
 
