@@ -9,9 +9,9 @@ variable "tags_all" {
   }
 }
 
-# eks variables
+#https://docs.aws.amazon.com/eks/latest/userguide/kubernetes-versions.html
 variable "kube_version" {
-  default     = "1.29"
+  default     = "1.31"
   type        = string
   description = "The Kubernetes Version"
 }
