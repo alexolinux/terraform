@@ -9,6 +9,13 @@ variable "tags_all" {
   }
 }
 
+variable "eks_name" {
+  default     = "eks-ckad"
+  type        = string
+  description = "The name of the EKS Cluster"
+
+}
+
 #https://docs.aws.amazon.com/eks/latest/userguide/kubernetes-versions.html
 variable "kube_version" {
   default     = "1.31"

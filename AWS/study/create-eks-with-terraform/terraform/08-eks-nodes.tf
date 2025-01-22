@@ -1,5 +1,5 @@
 locals {
-  node_name = "eks-ckad-node"
+  node_name = "${var.eks_name}-node"
 }
 
 #EKS - IAM Requirements
@@ -31,6 +31,11 @@ resource "aws_iam_role_policy_attachment" "AmazonEKS_CNI_Policy" {
 
 resource "aws_iam_role_policy_attachment" "AmazonEC2ContainerRegistryReadOnly" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+  role       = aws_iam_role.eks_nodes_role.name
+}
+
+resource "aws_iam_role_policy_attachment" "AmazonEBSCSIDriverPolicy" {
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy"
   role       = aws_iam_role.eks_nodes_role.name
 }
 
@@ -67,5 +72,6 @@ resource "aws_eks_node_group" "eks_nodes" {
     aws_iam_role_policy_attachment.AmazonEKSWorkerNodePolicy,
     aws_iam_role_policy_attachment.AmazonEKS_CNI_Policy,
     aws_iam_role_policy_attachment.AmazonEC2ContainerRegistryReadOnly,
+    aws_iam_role_policy_attachment.AmazonEBSCSIDriverPolicy
   ]
 }

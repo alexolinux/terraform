@@ -14,11 +14,11 @@ resource "aws_subnet" "private_us_east_1" {
   tags = merge(
     var.tags_all,
     {
-      "Name"                                                = "private-${element(local.azs, count.index)}"
-      "Tier"                                                = "private"
-      "kubernetes.io/role/internal-elb"                     = "1"
-      "kubernetes.io/cluster/eks-ckad"                      = "owned"
-      "service.beta.kubernetes.io/aws-load-balancer-scheme" = "internal"
+      "Name"                                  = "private-${element(local.azs, count.index)}"
+      "Tier"                                  = "private"
+      "kubernetes.io/role/internal-elb"       = "1"
+      "kubernetes.io/cluster/${var.eks_name}" = "owned"
+      #"service.beta.kubernetes.io/aws-load-balancer-scheme" = "internal"
     }
   )
 }
@@ -34,10 +34,10 @@ resource "aws_subnet" "public_us_east_1" {
   tags = merge(
     var.tags_all,
     {
-      "Name"                           = "public-${element(local.azs, count.index)}"
-      "Tier"                           = "public"
-      "kubernetes.io/role/elb"         = "1"
-      "kubernetes.io/cluster/eks-ckad" = "owned"
+      "Name"                                  = "public-${element(local.azs, count.index)}"
+      "Tier"                                  = "public"
+      "kubernetes.io/role/elb"                = "1"
+      "kubernetes.io/cluster/${var.eks_name}" = "owned"
     }
   )
 }
