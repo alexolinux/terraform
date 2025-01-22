@@ -47,10 +47,16 @@ Terraform EKS Cluster Creation by **Anton Putra**
 
 ---
 
+List Available EKS Clusters
+
+```shell
+aws eks list-clusters --region <region> --profile <aws_profile>
+```
+
 Connecting to EKS cluster
 
 ```shell
-aws eks --region <region> update-kubeconfig --name <cluster-name> --profile <aws_profile>
+aws eks update-kubeconfig --name <cluster-name> --region <region> --profile <aws_profile>
 ```
 
 Verifying Configuration:
