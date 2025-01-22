@@ -1,19 +1,27 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ns-demo-app
+  labels:
+    name: demo-app
+
+---
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  creationTimestamp: null
+  name: demo-app
+  namespace: ns-demo-app
   labels:
     app: demo-app
-  name: demo-app
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: demo-app
   strategy: {}
   template:
     metadata:
-      creationTimestamp: null
       labels:
         app: demo-app
     spec:
@@ -22,22 +30,30 @@ spec:
         name: nginx
         ports:
         - containerPort: 80
-        resources: {}
+        resources:
+          limits:
+            cpu: 200m
+            memory: 256Mi
+          requests:
+            cpu: 100m
+            memory: 128Mi
 
 ---
+
 apiVersion: v1
 kind: Service
 metadata:
-  name:  internal-nginx-service
+  name: svc-demo-app
+  namespace: ns-demo-app
   annotations:
-    #https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.2/guide/service/annotations/#lb-scheme
     service.beta.kubernetes.io/aws-load-balancer-type: nlb
     service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled: 'true'
-    service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
+    service.beta.kubernetes.io/aws-load-balancer-security-groups: ""
 spec:
   selector:
     app: demo-app
-  type: LoadBalancer
   ports:
     - protocol: TCP
       port: 80
+      targetPort: 80
+  type: LoadBalancer
