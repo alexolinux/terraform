@@ -1,8 +1,19 @@
 #!/bin/bash
 
 # Replace these variables with your own values
-BUCKET_NAME="<backend-s3-bucket-for-terraform>"
-REGION="<aws-region-here>"
+BUCKET_NAME="${AWS_BUCKET_NAME}"
+REGION="${AWS_REGION}"
+
+# Validate that BUCKET_NAME and REGION are set
+if [ -z "${AWS_BUCKET_NAME}" ]; then
+  echo "Error: BUCKET_NAME is not set. Please set the AWS_BUCKET_NAME environment variable."
+  exit 1
+fi
+
+if [ -z "$AWS_REGION" ]; then
+  echo "Error: REGION is not set. Please set the AWS_REGION environment variable."
+  exit 1
+fi
 
 # Check if AWS_PROFILE environment variable is set
 if [ -z "${AWS_PROFILE}" ]; then
