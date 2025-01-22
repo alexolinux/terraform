@@ -36,6 +36,7 @@ Terraform EKS Cluster Creation by **Anton Putra**
     ├── 05-route-tables.tf
     ├── 07-eks-cluster.tf
     ├── 08-eks-nodes.tf
+    ├── 09-nlb-security-group.tf
     └── variables.tf
 
 3 directories, 13 files
