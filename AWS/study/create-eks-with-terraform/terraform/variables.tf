@@ -18,7 +18,7 @@ variable "eks_name" {
 
 #https://docs.aws.amazon.com/eks/latest/userguide/kubernetes-versions.html
 variable "kube_version" {
-  default     = "1.31"
+  default     = "1.32"
   type        = string
   description = "The Kubernetes Version"
 }
