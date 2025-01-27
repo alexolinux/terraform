@@ -70,12 +70,7 @@ resource "aws_eks_cluster" "eks_cluster" {
     endpoint_public_access  = true
   }
 
-  #https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_cluster#kubernetes_network_config-1
-  kubernetes_network_config {
-    elastic_load_balancing {
-      enabled = true
-    }
-  }
+  bootstrap_self_managed_addons = false
 
   access_config {
     authentication_mode                         = "API"
