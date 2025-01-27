@@ -22,6 +22,12 @@ variable "kube_version" {
   description = "The Kubernetes Version"
 }
 
+variable "force_update_version" {
+  default     = false
+  type        = bool
+  description = "Force update the Kubernetes version"
+}
+
 #https://docs.aws.amazon.com/eks/latest/APIReference/API_Nodegroup.html#AmazonEKS-Type-Nodegroup-amiType
 variable "ami_type" {
   default     = "AL2_x86_64"

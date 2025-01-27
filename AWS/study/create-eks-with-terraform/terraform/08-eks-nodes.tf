@@ -46,7 +46,7 @@ resource "aws_eks_node_group" "eks_nodes" {
   node_group_name      = local.node_name
   node_role_arn        = aws_iam_role.eks_nodes_role.arn
   subnet_ids           = aws_subnet.private_us_east_1[*].id
-  force_update_version = false
+  force_update_version = var.force_update_version
   ami_type             = var.ami_type
   capacity_type        = var.capacity_type
   instance_types       = var.instance_types
@@ -54,7 +54,7 @@ resource "aws_eks_node_group" "eks_nodes" {
 
   scaling_config {
     desired_size = 1
-    max_size     = 2
+    max_size     = 3
     min_size     = 1
   }
 
