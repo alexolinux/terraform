@@ -42,7 +42,7 @@ variable "capacity_type" {
 }
 
 variable "instance_types" {
-  default     = ["t3.small", "t3.micro", "t3.medium"]
+  default     = ["t3.micro", "t3.medium", "t3.large"]
   type        = list(string)
   description = "List of instance types associated with the EKS Node Group"
 }
