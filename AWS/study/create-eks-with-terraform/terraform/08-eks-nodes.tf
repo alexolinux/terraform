@@ -19,21 +19,25 @@ resource "aws_iam_role" "eks_nodes_role" {
   })
 }
 
+#https://docs.aws.amazon.com/aws-managed-policy/latest/reference/AmazonEKSWorkerNodePolicy.html
 resource "aws_iam_role_policy_attachment" "AmazonEKSWorkerNodePolicy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
   role       = aws_iam_role.eks_nodes_role.name
 }
 
+#https://docs.aws.amazon.com/aws-managed-policy/latest/reference/AmazonEKS_CNI_Policy.html
 resource "aws_iam_role_policy_attachment" "AmazonEKS_CNI_Policy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
   role       = aws_iam_role.eks_nodes_role.name
 }
 
+#https://docs.aws.amazon.com/aws-managed-policy/latest/reference/AmazonEC2ContainerRegistryReadOnly.html
 resource "aws_iam_role_policy_attachment" "AmazonEC2ContainerRegistryReadOnly" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
   role       = aws_iam_role.eks_nodes_role.name
 }
 
+#https://docs.aws.amazon.com/aws-managed-policy/latest/reference/AmazonEBSCSIDriverPolicy.html
 resource "aws_iam_role_policy_attachment" "AmazonEBSCSIDriverPolicy" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy"
   role       = aws_iam_role.eks_nodes_role.name
@@ -43,7 +47,7 @@ resource "aws_iam_role_policy_attachment" "AmazonEBSCSIDriverPolicy" {
 resource "aws_eks_node_group" "eks_nodes" {
   cluster_name         = aws_eks_cluster.eks_cluster.name
   version              = var.kube_version
-  node_group_name      = local.node_name
+  node_group_name      = "general" #local.node_name
   node_role_arn        = aws_iam_role.eks_nodes_role.arn
   subnet_ids           = aws_subnet.private_us_east_1[*].id
   force_update_version = var.force_update_version
@@ -63,7 +67,7 @@ resource "aws_eks_node_group" "eks_nodes" {
   }
 
   labels = {
-    role = "eks_nodes_role"
+    role = "general"
   }
 
   # Ensure that IAM Role permissions are created before and deleted after EKS Node Group handling.
@@ -74,4 +78,17 @@ resource "aws_eks_node_group" "eks_nodes" {
     aws_iam_role_policy_attachment.AmazonEC2ContainerRegistryReadOnly,
     aws_iam_role_policy_attachment.AmazonEBSCSIDriverPolicy
   ]
+
+  # Optional: Allow external changes without Terraform plan difference
+  lifecycle {
+    ignore_changes = [scaling_config[0].desired_size]
+  }
+
+  tags = merge(
+    var.tags_all,
+    {
+      "Name"    = "local.node_name",
+      "Cluster" = "${var.eks_name}"
+    }
+  )
 }
