@@ -62,7 +62,7 @@ resource "aws_eks_cluster" "eks_cluster" {
     #https://docs.aws.amazon.com/eks/latest/userguide/private-clusters.html
     endpoint_private_access = false
     endpoint_public_access  = true
-    
+
     #https://docs.aws.amazon.com/eks/latest/best-practices/subnets.html
     subnet_ids = [
       aws_subnet.private_us_east_1[0].id,
