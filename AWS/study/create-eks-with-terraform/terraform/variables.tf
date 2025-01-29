@@ -42,13 +42,13 @@ variable "capacity_type" {
 }
 
 variable "instance_types" {
-  default     = ["t3.large"] #["t3.micro", "t3.medium", "t3.large"]
+  default     = ["t3.large"] #["t3.medium", "t3.large"]
   type        = list(string)
   description = "List of instance types associated with the EKS Node Group"
 }
 
 variable "disk_size" {
-  default     = 18
+  default     = 20
   type        = number
   description = "Disk size in the node group configuration"
 }
