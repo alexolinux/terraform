@@ -1,5 +1,5 @@
 locals {
-  node_name = "${var.eks_name}-node"
+  node_name = "${var.eks_name}"
 }
 
 #EKS - IAM Requirements
@@ -47,7 +47,7 @@ resource "aws_iam_role_policy_attachment" "AmazonEBSCSIDriverPolicy" {
 resource "aws_eks_node_group" "eks_nodes" {
   cluster_name         = aws_eks_cluster.eks_cluster.name
   version              = var.kube_version
-  node_group_name      = "general" #local.node_name
+  node_group_name      = local.node_name
   node_role_arn        = aws_iam_role.eks_nodes_role.arn
   subnet_ids           = aws_subnet.private_us_east_1[*].id
   force_update_version = var.force_update_version
@@ -67,7 +67,7 @@ resource "aws_eks_node_group" "eks_nodes" {
   }
 
   labels = {
-    role = "general"
+    role = "${local.node_name}"
   }
 
   # Ensure that IAM Role permissions are created before and deleted after EKS Node Group handling.
@@ -87,7 +87,7 @@ resource "aws_eks_node_group" "eks_nodes" {
   tags = merge(
     var.tags_all,
     {
-      "Name"    = "local.node_name",
+      "Name"    = "${local.node_name}",
       "Cluster" = "${var.eks_name}"
     }
   )
