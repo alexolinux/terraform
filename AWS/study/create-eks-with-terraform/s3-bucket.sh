@@ -1,9 +1,7 @@
 #!/bin/bash
 
-# Replace these variables with your own values
-# i.e.: export BUCKET_NAME REGION
-BUCKET_NAME="${BUCKET_NAME}"
-REGION="${REGION}"
+BUCKET_NAME="axvs-aws-create-eks-with-terraform-9999"
+REGION="us-east-1"
 
 # Validate that BUCKET_NAME and REGION are set
 if [ -z "${BUCKET_NAME}" ]; then
