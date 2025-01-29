@@ -1,17 +1,18 @@
 #!/bin/bash
 
 # Replace these variables with your own values
-BUCKET_NAME="${AWS_BUCKET_NAME}"
-REGION="${AWS_REGION}"
+# i.e.: export BUCKET_NAME REGION
+BUCKET_NAME="${BUCKET_NAME}"
+REGION="${REGION}"
 
 # Validate that BUCKET_NAME and REGION are set
-if [ -z "${AWS_BUCKET_NAME}" ]; then
-  echo "Error: BUCKET_NAME is not set. Please set the AWS_BUCKET_NAME environment variable."
+if [ -z "${BUCKET_NAME}" ]; then
+  echo "Error: BUCKET_NAME is not set. Please set the BUCKET_NAME environment variable."
   exit 1
 fi
 
-if [ -z "$AWS_REGION" ]; then
-  echo "Error: REGION is not set. Please set the AWS_REGION environment variable."
+if [ -z "$REGION" ]; then
+  echo "Error: REGION is not set. Please set the REGION environment variable."
   exit 1
 fi
 
