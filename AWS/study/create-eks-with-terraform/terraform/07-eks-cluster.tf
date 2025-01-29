@@ -59,15 +59,17 @@ resource "aws_eks_cluster" "eks_cluster" {
   role_arn = aws_iam_role.eks_cluster_role.arn
 
   vpc_config {
+    #https://docs.aws.amazon.com/eks/latest/userguide/private-clusters.html
+    endpoint_private_access = false
+    endpoint_public_access  = true
+    
+    #https://docs.aws.amazon.com/eks/latest/best-practices/subnets.html
     subnet_ids = [
       aws_subnet.private_us_east_1[0].id,
       aws_subnet.private_us_east_1[1].id,
       #aws_subnet.public_us_east_1[0].id,
       #aws_subnet.public_us_east_1[1].id,
     ]
-
-    endpoint_private_access = false
-    endpoint_public_access  = true
   }
 
   bootstrap_self_managed_addons = false
