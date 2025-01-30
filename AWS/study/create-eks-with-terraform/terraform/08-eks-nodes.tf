@@ -1,5 +1,5 @@
 locals {
-  node_name = "${var.eks_name}"
+  node_name = var.eks_name
 }
 
 #EKS - IAM Requirements
@@ -51,11 +51,11 @@ resource "aws_eks_node_group" "eks_nodes" {
   node_role_arn        = aws_iam_role.eks_nodes_role.arn
   subnet_ids           = aws_subnet.private_us_east_1[*].id
   force_update_version = var.force_update_version
-  
+
   #https://docs.aws.amazon.com/eks/latest/APIReference/API_Nodegroup.html#AmazonEKS-Type-Nodegroup
   #ami_type             = var.ami_type
-  capacity_type        = var.capacity_type
-  instance_types       = var.instance_types
+  capacity_type  = var.capacity_type
+  instance_types = var.instance_types
 
   scaling_config {
     desired_size = 1
