@@ -72,6 +72,7 @@ resource "aws_eks_cluster" "eks_cluster" {
     ]
   }
 
+  #https://docs.aws.amazon.com/eks/latest/userguide/managing-vpc-cni.html
   bootstrap_self_managed_addons = false
 
   access_config {
