@@ -38,17 +38,17 @@ variable "ami_type" {
 variable "capacity_type" {
   default     = "ON_DEMAND"
   type        = string
-  description = "Valid Values: ON_DEMAND | SPOT"
+  description = "The capacity type of your managed node group: ON_DEMAND | SPOT | CAPACITY_BLOCK"
 }
 
 variable "instance_types" {
-  default     = ["t3.large"] #["t3.medium", "t3.large"]
+  default     = ["t3.medium", "t3.large"]
   type        = list(string)
   description = "List of instance types associated with the EKS Node Group"
 }
 
 variable "disk_size" {
-  default     = 20
+  default     = 30
   type        = number
   description = "Disk size in the node group configuration"
 }
