@@ -67,8 +67,8 @@ resource "aws_eks_cluster" "eks_cluster" {
     subnet_ids = [
       aws_subnet.private_us_east_1[0].id,
       aws_subnet.private_us_east_1[1].id,
-      #aws_subnet.public_us_east_1[0].id,
-      #aws_subnet.public_us_east_1[1].id,
+      aws_subnet.public_us_east_1[0].id,
+      aws_subnet.public_us_east_1[1].id,
     ]
   }
 
@@ -91,6 +91,35 @@ resource "aws_eks_cluster" "eks_cluster" {
       "Name" = "${var.eks_name}"
     }
   )
+}
+
+# AddOns for EKS Cluster
+
+resource "aws_eks_addon" "metrics_server" {
+  cluster_name = aws_eks_cluster.eks_cluster.name
+  addon_name   = "metrics-server"
+}
+
+resource "aws_eks_addon" "vpc_cni" {
+  cluster_name = aws_eks_cluster.eks_cluster.name
+  addon_name   = "vpc-cni"
+}
+
+resource "aws_eks_addon" "coredns" {
+  cluster_name                = aws_eks_cluster.eks_cluster.name
+  addon_name                  = "coredns"
+  resolve_conflicts_on_create = "OVERWRITE"
+}
+
+resource "aws_eks_addon" "kube_proxy" {
+  cluster_name = aws_eks_cluster.eks_cluster.name
+  addon_name   = "kube-proxy"
+}
+
+# Optional: AddOn for EBS CSI Driver
+resource "aws_eks_addon" "ebs_csi_driver" {
+  cluster_name = aws_eks_cluster.eks_cluster.name
+  addon_name   = "aws-ebs-csi-driver"
 }
 
 output "eks_endpoint" {
