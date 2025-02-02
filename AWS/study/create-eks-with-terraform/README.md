@@ -23,6 +23,7 @@ Terraform EKS Cluster Creation by **Anton Putra**
 ```shell
 .
 ├── k8s
+│   ├── demo-app-hpa.yaml
 │   └── demo-app.yaml
 ├── README.md
 ├── s3-bucket.sh
@@ -39,12 +40,12 @@ Terraform EKS Cluster Creation by **Anton Putra**
     ├── 09-nlb-security-group.tf
     └── variables.tf
 
-3 directories, 13 files
+3 directories, 15 files
 ```
 
 ---
 
-## EKS connection
+## EKS connection via AWS CLI
 
 ---
 
@@ -66,8 +67,27 @@ Verifying Configuration:
 kubectl config get-contexts
 ```
 
+Creating Deploy and HPA
+
+```shell
+kubectl -n ns-demo-app apply -f k8s/demo-app.yaml && \
+kubectl -n ns-demo-app apply -f k8s/demo-app-hpa.yaml
+```
+
+Creating Load by running container
+
+```shell
+kubectl run -i \
+    --tty load-generator \
+    --rm --image=busybox \
+    --restart=Never \
+    -- /bin/sh -c "while sleep 0.01; do wget -q -O- http://EKS-LoadBalancerHere; done"
+```
+
+# References
+
 - <https://docs.aws.amazon.com/eks/latest/userguide/create-kubeconfig.html>
 
 - <https://docs.aws.amazon.com/eks/latest/userguide/connecting-cluster.html>
 
-* _TO DO: Implement AddOns Annotations TF_
+- <https://docs.aws.amazon.com/eks/latest/userguide/horizontal-pod-autoscaler.html>
