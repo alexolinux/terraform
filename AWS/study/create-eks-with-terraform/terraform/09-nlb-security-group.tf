@@ -20,7 +20,8 @@ resource "aws_security_group" "nlb_sg" {
   tags = merge(
     var.tags_all,
     {
-      "Name" = "lb-app-sg"
+      "Name"                   = "lb-app-sg",
+      "karpenter.sh/discovery" = "${var.eks_name}"
     }
   )
 }
