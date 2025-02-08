@@ -2,11 +2,35 @@ variable "tags_all" {
   description = "A map of tags to apply to all resources"
   type        = map(string)
   default = {
-    Name        = "CloudGuru"
+    Name        = "EKS-CKAD"
     Environment = "Development"
     managedby   = "terraform"
-    Tutorial    = "Anton Putra - EKS Cluster"
+    author      = "alexolinux"
   }
+}
+
+variable "aws_region" {
+  default     = "us-east-1"
+  type        = string
+  description = "The AWS region"
+}
+
+variable "azs" {
+  type        = list(string)
+  default     = ["us-east-1a", "us-east-1b"]
+  description = "List of Availability Zones"
+}
+
+variable "private_subnet_cidrs" {
+  type        = list(string)
+  default     = ["10.0.0.0/19", "10.0.32.0/19"]
+  description = "Value of the private subnet CIDR blocks"
+}
+
+variable "public_subnet_cidrs" {
+  type        = list(string)
+  default     = ["10.0.64.0/19", "10.0.96.0/19"]
+  description = "Value of the public subnet CIDR blocks"
 }
 
 variable "eks_name" {
