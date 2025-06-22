@@ -1,24 +1,27 @@
 #!/bin/bash
 
-BUCKET_NAME="axvs-aws-create-eks-with-terraform-9999"
-REGION="us-east-1"
-
-# Validate that BUCKET_NAME and REGION are set
-if [ -z "${BUCKET_NAME}" ]; then
-  echo "Error: BUCKET_NAME is not set. Please set the BUCKET_NAME environment variable."
-  exit 1
-fi
-
-if [ -z "$REGION" ]; then
-  echo "Error: REGION is not set. Please set the REGION environment variable."
-  exit 1
-fi
-
 # Check if AWS_PROFILE environment variable is set
 if [ -z "${AWS_PROFILE}" ]; then
     echo "Required AWS_PROFILE environment is not set."
     exit 1
 fi
+
+# Prompt for AWS region
+read -p "Enter the AWS Region (e.g., us-east-1): " aws_region
+aws_region="${aws_region:-us-east-1}"
+
+# Validate that bucket_name and aws_region are set
+while true; do
+  echo "Creating S3 bucket for Terraform backend state storage."
+  echo "Example: cmd-rm-rf-ops-321"
+  read -p "Enter the S3 Bucket Name: " bucket_name
+  if [[ -n "$bucket_name" ]]; then
+    echo "Bucket name accepted: $bucket_name"
+    break
+  else
+    echo "Bucket name cannot be empty. Please try again."
+  fi
+done
 
 # Check the number of arguments passed to the script
 if [ "$#" -ne 1 ]; then
@@ -29,18 +32,18 @@ fi
 # Function to create S3 bucket
 create_bucket() {
     aws s3api create-bucket \
-        --bucket "${BUCKET_NAME}" \
-        --region "${REGION}"
+        --bucket "${bucket_name}" \
+        --region "${aws_region}"
 }
 
 # Function to destroy S3 bucket
 destroy_bucket() {
     # Empty the bucket
-    aws s3 rm s3://"${BUCKET_NAME}" --recursive
+    aws s3 rm s3://"${bucket_name}" --recursive
 
     # Delete the bucket
     aws s3api delete-bucket \
-        --bucket "${BUCKET_NAME}"
+        --bucket "${bucket_name}"
 }
 
 # Handle the command based on the argument
@@ -56,3 +59,4 @@ case "$1" in
         exit 1
         ;;
 esac
+
