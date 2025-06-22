@@ -1,3 +1,7 @@
+locals {
+  eks_cluster_tag_map = { for name in var.eks_names : "kubernetes.io/cluster/${name}" => "owned" }
+}
+
 resource "aws_subnet" "private_us_east_1" {
   count = length(var.public_subnet_cidrs)
 
@@ -12,7 +16,7 @@ resource "aws_subnet" "private_us_east_1" {
       "Tier"                                  = "private"
       "kubernetes.io/role/internal-elb"       = "1"
       "kubernetes.io/cluster/${var.eks_name}" = "owned"
-      "karpenter.sh/discovery"                = "${var.eks_name}"
+      "karpenter.sh/discovery"                = var.eks_names[0]
     }
   )
 }

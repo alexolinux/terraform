@@ -52,6 +52,16 @@ resource "aws_iam_role_policy_attachment" "attach_eks_lb_policy" {
   role       = aws_iam_role.eks_cluster_role.name
 }
 
+resource "aws_iam_role_policy_attachment" "attach_eks_service_policy" {
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSServicePolicy"
+  role       = aws_iam_role.eks_cluster_role.name
+}
+
+resource "aws_iam_role_policy_attachment" "attach_eks_vpc_resource_controller" {
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSVPCResourceController"
+  role       = aws_iam_role.eks_cluster_role.name
+}
+
 #https://github.com/tensult/terraform/blob/master/aws/Kubernetes/cluster/eks-cluster.tf
 resource "aws_eks_cluster" "eks_cluster" {
   name     = var.eks_name
@@ -60,8 +70,9 @@ resource "aws_eks_cluster" "eks_cluster" {
 
   vpc_config {
     #https://docs.aws.amazon.com/eks/latest/userguide/private-clusters.html
-    endpoint_private_access = false
+    endpoint_private_access = true
     endpoint_public_access  = true
+    #public_access_cidrs     = ["YOUR_OFFICE_IP/32"] # Replace with your trusted IP(s)
 
     #https://docs.aws.amazon.com/eks/latest/best-practices/subnets.html
     subnet_ids = [
@@ -96,32 +107,61 @@ resource "aws_eks_cluster" "eks_cluster" {
 # AddOns for EKS Cluster
 
 resource "aws_eks_addon" "metrics_server" {
-  cluster_name = aws_eks_cluster.eks_cluster.name
-  addon_name   = "metrics-server"
+  cluster_name                = aws_eks_cluster.eks_cluster.name
+  addon_name                  = "metrics-server"
+  resolve_conflicts_on_create = "OVERWRITE"
+  addon_version               = var.addon_version_metrics_server != "" ? var.addon_version_metrics_server : null
 }
 
 resource "aws_eks_addon" "vpc_cni" {
-  cluster_name = aws_eks_cluster.eks_cluster.name
-  addon_name   = "vpc-cni"
+  cluster_name                = aws_eks_cluster.eks_cluster.name
+  addon_name                  = "vpc-cni"
+  resolve_conflicts_on_create = "OVERWRITE"
+  addon_version               = var.addon_version_vpc_cni != "" ? var.addon_version_vpc_cni : null
 }
 
 resource "aws_eks_addon" "coredns" {
   cluster_name                = aws_eks_cluster.eks_cluster.name
   addon_name                  = "coredns"
   resolve_conflicts_on_create = "OVERWRITE"
+  addon_version               = var.addon_version_coredns != "" ? var.addon_version_coredns : null
 }
 
 resource "aws_eks_addon" "kube_proxy" {
-  cluster_name = aws_eks_cluster.eks_cluster.name
-  addon_name   = "kube-proxy"
+  cluster_name                = aws_eks_cluster.eks_cluster.name
+  addon_name                  = "kube-proxy"
+  resolve_conflicts_on_create = "OVERWRITE"
+  addon_version               = var.addon_version_kube_proxy != "" ? var.addon_version_kube_proxy : null
 }
 
 # Optional: AddOn for EBS CSI Driver
 resource "aws_eks_addon" "ebs_csi_driver" {
-  cluster_name = aws_eks_cluster.eks_cluster.name
-  addon_name   = "aws-ebs-csi-driver"
+  cluster_name                = aws_eks_cluster.eks_cluster.name
+  addon_name                  = "aws-ebs-csi-driver"
+  resolve_conflicts_on_create = "OVERWRITE"
+  addon_version               = var.addon_version_ebs_csi_driver != "" ? var.addon_version_ebs_csi_driver : null
+}
+
+# OIDC Provider for EKS Cluster - required for IAM Roles for Service Accounts (IRSA)
+resource "aws_iam_openid_connect_provider" "eks" {
+  url             = aws_eks_cluster.eks_cluster.identity[0].oidc[0].issuer
+  client_id_list  = ["sts.amazonaws.com"]
+  thumbprint_list = [data.tls_certificate.oidc_thumbprint.certificates[0].sha1_fingerprint]
+}
+
+data "tls_certificate" "oidc_thumbprint" {
+  url = aws_eks_cluster.eks_cluster.identity[0].oidc[0].issuer
+}
+
+# Outputs
+output "eks_cluster_name" {
+  value = aws_eks_cluster.eks_cluster.name
 }
 
 output "eks_endpoint" {
   value = aws_eks_cluster.eks_cluster.endpoint
+}
+
+output "eks_cluster_oidc_issuer_url" {
+  value = aws_eks_cluster.eks_cluster.identity[0].oidc[0].issuer
 }

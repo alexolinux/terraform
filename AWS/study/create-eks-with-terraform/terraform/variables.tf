@@ -45,11 +45,49 @@ variable "eks_name" {
   description = "The name of the EKS Cluster"
 }
 
+variable "eks_names" {
+  type        = list(string)
+  default     = ["eks-ckad"]
+  description = "List of EKS Cluster names"
+}
+
 #https://docs.aws.amazon.com/eks/latest/userguide/kubernetes-versions.html
 variable "kube_version" {
   default     = "1.32"
   type        = string
   description = "The Kubernetes Version"
+}
+
+#aws eks describe-addon-versions --addon-name metrics-server --kubernetes-version 1.32 --region <aws_region>
+variable "addon_version_metrics_server" {
+  default     = "v0.7.2-eksbuild.4"
+  type        = string
+  description = "The version of the Metrics Server Addon"
+}
+
+#aws eks describe-addon-versions --addon-name vpc-cni --kubernetes-version 1.32 --region <aws_region>
+variable "addon_version_vpc_cni" {
+  default     = "v1.19.6-eksbuild.1"
+  type        = string
+  description = "The version of the VPC CNI Addon"
+}
+
+variable "addon_version_coredns" {
+  default     = "v1.11.4-eksbuild.14"
+  type        = string
+  description = "The version of the CoreDNS Addon"
+}
+
+variable "addon_version_kube_proxy" {
+  default     = "v1.32.5-eksbuild.2"
+  type        = string
+  description = "The version of the kube-proxy Addon"
+}
+
+variable "addon_version_ebs_csi_driver" {
+  default     = "v1.44.0-eksbuild.1"
+  type        = string
+  description = "The version of the EBS CSI Addon"
 }
 
 variable "force_update_version" {
