@@ -21,6 +21,12 @@ variable "azs" {
   description = "List of Availability Zones"
 }
 
+variable "vpc_name" {
+  default     = "eks-ckad-vpc"
+  type        = string
+  description = "The name of the Main VPC for the EKS Cluster"
+}
+
 variable "private_subnet_cidrs" {
   type        = list(string)
   default     = ["10.0.0.0/19", "10.0.32.0/19"]

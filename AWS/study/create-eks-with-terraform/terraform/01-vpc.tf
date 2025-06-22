@@ -8,7 +8,7 @@ resource "aws_vpc" "main" {
   tags = merge(
     var.tags_all,
     {
-      Name = "main"
+      Name = "${var.vpc_name}"
     }
   )
 }
@@ -20,5 +20,5 @@ output "vpc_id" {
 
 output "vpc_cidr" {
   value       = aws_vpc.main.cidr_block
-  description = "VPC ID"
+  description = "VPC CIDR Block"
 }

@@ -4,7 +4,7 @@ resource "aws_internet_gateway" "igw" {
   tags = merge(
     var.tags_all,
     {
-      Name = "igw"
+      Name = "${var.vpc_name}-igw"
     }
   )
 }
