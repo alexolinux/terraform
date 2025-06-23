@@ -1,27 +1,28 @@
 #!/bin/bash
 
-# Check if AWS_PROFILE environment variable is set
 if [ -z "${AWS_PROFILE}" ]; then
     echo "Required AWS_PROFILE environment is not set."
     exit 1
 fi
 
-# Prompt for AWS region
-read -p "Enter the AWS Region (e.g., us-east-1): " aws_region
-aws_region="${aws_region:-us-east-1}"
+get_region() {
+    read -p "Enter the AWS Region (e.g., us-east-1): " aws_region
+    aws_region="${aws_region:-us-east-1}"
+}
 
-# Validate that bucket_name and aws_region are set
-while true; do
-  echo "Creating S3 bucket for Terraform backend state storage."
-  echo "Example: cmd-rm-rf-ops-321"
-  read -p "Enter the S3 Bucket Name: " bucket_name
-  if [[ -n "$bucket_name" ]]; then
-    echo "Bucket name accepted: $bucket_name"
-    break
-  else
-    echo "Bucket name cannot be empty. Please try again."
-  fi
-done
+get_bucket() {
+    while true; do
+        echo "Please provide a unique S3 bucket name. Example: my-random-tf-bucket-321"
+        read -p "Enter the S3 Bucket Name: " bucket_name
+
+        if [[ -n "$bucket_name" ]]; then
+            echo "Bucket name accepted: $bucket_name"
+            break  # Exit the loop if the input is valid
+        else
+            echo "Bucket name cannot be empty. Please try again."
+        fi
+    done
+}
 
 # Check the number of arguments passed to the script
 if [ "$#" -ne 1 ]; then
@@ -29,14 +30,12 @@ if [ "$#" -ne 1 ]; then
     exit 1
 fi
 
-# Function to create S3 bucket
 create_bucket() {
     aws s3api create-bucket \
         --bucket "${bucket_name}" \
         --region "${aws_region}"
 }
 
-# Function to destroy S3 bucket
 destroy_bucket() {
     # Empty the bucket
     aws s3 rm s3://"${bucket_name}" --recursive
@@ -44,14 +43,24 @@ destroy_bucket() {
     # Delete the bucket
     aws s3api delete-bucket \
         --bucket "${bucket_name}"
+    
+    if [ $? -eq 0 ]; then
+        echo "Bucket ${bucket_name} deleted successfully."
+    else
+        echo "Failed to delete bucket ${bucket_name}."
+        exit 1
+    fi
 }
 
 # Handle the command based on the argument
 case "$1" in
     "create")
+        get_bucket
+        get_region
         create_bucket
         ;;
     "destroy")
+        get_bucket
         destroy_bucket
         ;;
     *)
@@ -59,4 +68,3 @@ case "$1" in
         exit 1
         ;;
 esac
-
